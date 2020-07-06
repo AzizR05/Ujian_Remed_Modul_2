@@ -1,0 +1,76 @@
+/*MySQL secara default menyertakan database world yang dapat digunakan oleh user untuk
+mempelajari teknik penggunaan database di MySQL. Database world merupakan sample
+real database yang bersumber dari Statistics Finland dan dirilis sekitar awal tahun 2000-an.
+
+Database ini berisi 3 buah tabel yang saling berhubungan satu sama lain:
+-Tabel city berisi informasi tentang 4079 kota di dunia.
+-Tabel country berisi informasi tentang 239 negara/wilayah yang dianggap sebagai
+negara di dunia.
+-Tabel country language berisi informasi tentang bahasa yang digunakan oleh negaranegara
+di dunia.*/
+
+
+/*No. 1
+Tampilkan daftar 10 kota berpopulasi tertinggi di Indonesia. Urutkan data dari kota dengan populasi terbanyak. 
+Kolom yang diwajibkan tampil adalah id kota,
+nama kota, kode negara, distrik/provinsi dan populasi.*/
+
+SELECT ID, Name, CountryCode, District, Population FROM city
+WHERE CountryCode = 'IDN'
+ORDER BY Population DESC LIMIT 10;
+
+
+
+/*No. 2
+Tampilkan daftar 10 kota yang berpopulasi tertinggi di dunia beserta asal negaranya. 
+Urutkan data dari kota dengan populasi terbanyak. 
+Kolom yang diwajibkan ada minimal adalah id kota, nama kota, distrik/provinsi, nama negara dan populasi.*/
+
+SELECT ID, Name, District, CountryCode, Population FROM city
+ORDER BY Population DESC LIMIT 10;
+
+
+/*No.3
+Tampilkan daftar 10 negara yang tercatat merdeka paling awal. 
+Daftar negara yang tidak diketahui tahun kemerdekaannya, tidak perlu diikutsertakan. 
+Kolom yang diwajibkan ada minimal adalah kode negara, nama negara, benua, regional dan tahun merdeka 
+(Independence Year). Output yang diharapkan*/
+
+SELECT Code, Name, Continent, Region, IndepYear FROM country
+WHERE IndepYear IS NOT NULL
+ORDER BY IndepYear ASC LIMIT 10;
+
+/*No.4
+Tampilkan daftar 10 negara yang bahasa resminya (official language) adalah bahasa Inggris, 
+dan memiliki persentase pengguna bahasa Inggris tertinggi di dunia. 
+Kolom yang diwajibkan ada yaitu kode negara, nama negara, bahasa, kolom isOfficial dan percentage. 
+Urutkan dari persentase pengguna bahasa Inggris tertinggi*/
+
+SELECT
+    cl.CountryCode AS country_code,
+    c.name AS name,
+    cl.Language AS language,
+    cl.IsOfficial AS isOfficial,
+    cl.percentage AS percentage
+
+FROM 
+	countrylanguage cl 
+		LEFT JOIN 
+	country c ON cl.CountryCode = c.Code
+WHERE language = 'English' AND isOfficial = 'T'
+ORDER BY percentage DESC
+LIMIT 10;
+
+
+/*No.5
+Tampilkan daftar negara ASEAN beserta populasi negaranya, 
+Pendapatan Nasional Bruto/GNP (Gross National Product), ibukota & populasi ibukota. 
+ASEAN (Association of Southeast Asian Nations) merupakan sebuah organisasi geo-politik 
+dan ekonomi dari negara-negara di kawasan Asia Tenggara, yang didirikan di Bangkok, 8 Agustus 1967 
+dengan tujuan untuk meningkatkan pertumbuhan ekonomi, kemajuan sosial, pengembangan kebudayaan negara-negara
+ anggotanya, serta memajukan perdamaian dan stabilitas di tingkat regional*/
+
+SELECT co.Name AS Negara_ASEAN, co.Population AS Populasi_Negara, co.GNP, c.Name AS Ibukota, c.Population AS Populasi_Ibukota
+from country co left join city c on co.Capital = c.ID
+where co.Name in ('Brunei','Cambodia','East Timor','Indonesia','Laos','Malaysia','Myanmar','Philippines',
+'Singapore','Thailand','Vietnam') order by co.Name
